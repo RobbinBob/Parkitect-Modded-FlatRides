@@ -1,4 +1,5 @@
-﻿using Parkitect.Mods.AssetPacks;
+﻿using FlatRideUtility.Util;
+using Parkitect.Mods.AssetPacks;
 using UnityEngine;
 
 namespace FlatRideUtility.Decorators
@@ -7,6 +8,8 @@ namespace FlatRideUtility.Decorators
     {
         public void Decorate<T>(T flatride, GameObject go, Asset asset, AssetBundle assetbundle) where T : FlatRide
         {
+            flatride.price = asset.Price;
+
             flatride.categoryTag = asset.FlatRideCategory;
             flatride.description = asset.Description;
             flatride.rainProtection = asset.RainProtection;
