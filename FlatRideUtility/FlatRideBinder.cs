@@ -15,8 +15,8 @@ namespace FlatRideUtility
     {
         private readonly List<Object> registeredObjects = new List<Object>();
         private readonly string binderHash;
-        // Not sure what this is for
-        private readonly GameObject hider;
+
+        private bool m_IsApplied = false;
 
         /// <summary>
         /// Create new <see cref="FlatRideBinder"/> with hash <paramref name="hash"/> for modifying FlatRides
@@ -24,7 +24,6 @@ namespace FlatRideUtility
         /// <param name="hash"></param>
         public FlatRideBinder(string hash)
         {
-            hider = new GameObject();
             binderHash = hash;
         }
 
@@ -32,6 +31,13 @@ namespace FlatRideUtility
         {
             return string.Concat(name, "-", binderHash);
         }
+
+
+        /// <summary>
+        /// Returns the <see cref="FlatRideBinder"/> patch state.
+        /// </summary>
+        /// <returns><see langword="true"/> if applied, otherwise <see langword="false"/>.</returns>
+        public bool IsApplied() => m_IsApplied;
 
 
         /// <summary>
@@ -46,7 +52,7 @@ namespace FlatRideUtility
                     FileIO.Write($"Binding FlatRide of Type: {registeredObjects[i].GetType().FullName} with Name: {registeredObjects[i].name}");
                     ScriptableSingleton<AssetManager>.Instance.registerObject(registeredObjects[i]);
                 }
-                hider.SetActive(false);
+                m_IsApplied = true;
             }
             catch (Exception e)
             {
@@ -65,7 +71,7 @@ namespace FlatRideUtility
                 {
                     ScriptableSingleton<AssetManager>.Instance.unregisterObject(registeredObjects[i]);
                 }
-                Object.DestroyImmediate(hider);
+                m_IsApplied = false;
             }
             catch (Exception e)
             {
@@ -108,23 +114,6 @@ namespace FlatRideUtility
 
             registeredObjects.Add(flatRide);
             return flatRide;
-        }
-        /// <summary>
-        /// Create a new <see cref="FlatRide"/> of type <typeparamref name="T"/>, attached to <paramref name="rideprefab"/>, Useful for full customization of a <see cref="FlatRide"/>
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="name"></param>
-        /// <param name="displayname"></param>
-        /// <param name="rideprefab"></param>
-        /// <returns>The <see cref="FlatRide"/> component</returns>
-        public T RegisterNewFlatRide<T>(string name, string displayname, GameObject rideprefab) where T : FlatRide
-        {
-            T component = rideprefab.AddComponent<T>();
-            component.name = GetNameHash(name);
-            component.setDisplayName(displayname);
-
-            registeredObjects.Add(component);
-            return component;
         }
         /// <summary>
         /// Creates a new <see cref="FlatRide"/> of type <typeparamref name="T"/>, setup using a PAE <see cref="AssetPack"/>
